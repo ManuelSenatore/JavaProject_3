@@ -125,4 +125,33 @@ public class PrestitoDAO {
             em.close();
         }
     }
+
+    public static void closePrestito(Long id) {
+        EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
+
+        try {
+
+            EntityTransaction transaction = em.getTransaction();
+            transaction.begin();
+
+            Query q = em.createQuery("UPDATE Prestito p SET dataRestituzioneEffettiva = :dataRestituzione WHERE p.id = :id");
+
+            q.setParameter("dataRestituzione", LocalDate.now());
+
+            q.setParameter("id", id);
+
+            q.executeUpdate();
+
+            transaction.commit();
+
+        } catch (Exception ex) {
+            em.getTransaction().rollback();
+
+            logger.error("Error saving object ", ex);
+            throw ex;
+
+        } finally {
+            em.close();
+        }
+    }
 }
